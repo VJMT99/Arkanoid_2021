@@ -1,34 +1,31 @@
+/*Autor: Víctor Jiménez Martín de la Torre*/
+
 package codigo;
 
 import java.awt.Color;
 
-import acm.graphics.GImage;
 import acm.graphics.GObject;
 import acm.graphics.GOval;
 
 public class Bola extends GOval{
-	int dx = 1; //velocidad eje x
-	int dy = 1; //velocidad eje y
+	double dx = 1; //velocidad eje x
+	double dy = 1; //velocidad eje y
 
 	public Bola(double width, double height, Color color) {
+		//constructor
 		super(width, height);
 		setFillColor(color);
 		setFilled(true);
-		
-		
 	}
-
-
 	public void muevete(Arkanoid ark){
-		dx=dx;
-		dy=dy;
+		//metodo para movimiento
+
 		//rebote con el suelo y rebote con techo
-		if(getY()> ark.getHeight() + 220 ||getY()<20){
+		if(getY()> ark.getHeight() + 220 ||getY()<5){
 			dy = dy*-1;
 		}
-
 		//rebote con pared derecha y  rebote con pared izquierda
-		if(getX()> ark.getWidth()-230||getX()<20){
+		if(getX()> ark.getWidth()-230||getX()<5){
 			dx = dx*-1;
 		}
 		if(chequeaColision(getX(),getY(), ark)){
@@ -40,21 +37,22 @@ public class Bola extends GOval{
 				}
 			}
 		}
-		
 		//mueve la bola en la direccion correcta
 		move(dx,dy);
 		
 	}
 	private boolean chequeaColision(double posx, double posy, Arkanoid ark){
+		//detector de colisiones de la bola
 		boolean noHaChocado = true;
 		GObject aux;
 		Ladrillo ladrillo;
 		Cursor cursor;
 		
 		aux = ark.getElementAt(posx,posy);
+		
 		if(aux instanceof Cursor){
+			//aseguramos que es la plataforma
 			cursor=(Cursor)aux;
-			
 			if(posx>=cursor.getX() + cursor.getWidth()/2 && posx<=cursor.getX() + cursor.getWidth()){
 				if(dx<0){
 					dx=dx*-1;
@@ -65,33 +63,32 @@ public class Bola extends GOval{
 					dx=dx*-1;
 				}
 			}
-			
 			dy=dy*-1;
 			noHaChocado=false;
-			
 		}else if (aux == null){
-			
-		}else if(aux instanceof Ladrillo){//aseguramos que es un ladrillo
+		
+		}else if(aux instanceof Ladrillo){
+			//aseguramos que es un ladrillo
 			ladrillo= (Ladrillo) aux;
 			if(ladrillo.getY() + ladrillo.getHeight() <= posy || ladrillo.getY() >= posy){
 				dy=dy*-1;
 			}else if(ladrillo.getX() + ladrillo.getWidth() <= posx || ladrillo.getX() >= posx){
 				dx=dx*-1;
 			}
+			//elimina el ladrillo
+			
 			ladrillo.eliminaLadrillo(ark);
 			if(ladrillo.numero_golpes==1){
 				ark.marcador.aumentaMarcador(1);
-
 			}
-			if(ark.marcador.getPuntuacion()==45){
+			//actualiza el nivel
+			if(ark.marcador.getPuntuacion()==27){
 				ark.marcador.aumentaNivel(1, ark);
 				ark.marcador.texto2.setLabel("0");
 			}
 			
 			noHaChocado=false;
-
 		}
-		
 		return noHaChocado;
 	}
 }
